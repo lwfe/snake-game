@@ -5,11 +5,22 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Snake Game">
 	<main>
 		<h1>minimal <span class="text-gradient">snake game</span></h1>
+		<div class="flex gap-12 items-center justify-center py-6">
+			<button id="playButton" class="px-2 py-1">Play</button>
+
+			<p class="px-2 py-1 rounded-md bg-neutral-800">
+				score: <span id="score">0</span>
+			</p>
+
+			<button id="restartButton" class="px-2 py-1">Restart</button>
+		</div>
 		<canvas id="snakeGame"></canvas>
 	</main>
 </Layout>
 
 <script>
+	const score = document.getElementById("score")! as HTMLSpanElement;
+
 	//board
 	var blockSize = 25;
 	var rows = 25;
@@ -39,6 +50,19 @@ import Layout from "../layouts/Layout.astro";
 		context = board.getContext("2d")!; //used for drawing on the board
 
 		placeFood();
+
+		let playButton = document.getElementById(
+			"playButton",
+		)! as HTMLButtonElement;
+
+		playButton.addEventListener("click", clickPlay);
+
+		let restartButton = document.getElementById(
+			"restartButton",
+		)! as HTMLButtonElement;
+
+		restartButton.addEventListener("click", clickPlay);
+
 		document.addEventListener("keydown", changeDirection);
 		// update();
 		setInterval(update, 1000 / 10); //100 milliseconds
@@ -57,6 +81,7 @@ import Layout from "../layouts/Layout.astro";
 
 		if (snakeX == foodX && snakeY == foodY) {
 			snakeBody.push([foodX, foodY]);
+			score.innerHTML = (parseInt(score.innerHTML) + 10).toString();
 			placeFood();
 		}
 
@@ -94,6 +119,16 @@ import Layout from "../layouts/Layout.astro";
 		}
 	}
 
+	function clickPlay() {
+		gameOver = false;
+		snakeX = blockSize * 5;
+		snakeY = blockSize * 5;
+		snakeBody = [];
+		score.innerHTML = "0";
+		velocityX = 1;
+		velocityY = 0;
+	}
+
 	function changeDirection(e: KeyboardEvent) {
 		if (e.code == "ArrowUp" && velocityY != 1) {
 			velocityX = 0;
@@ -120,7 +155,7 @@ import Layout from "../layouts/Layout.astro";
 <style>
 	main {
 		margin: auto;
-		margin-top: 56px;
+		margin-top: 20px;
 		padding: 1rem;
 		width: fit-content;
 		max-width: calc(100% - 2rem);
@@ -132,8 +167,8 @@ import Layout from "../layouts/Layout.astro";
 		font-size: 3.5rem;
 		font-weight: 700;
 		line-height: 1;
-		text-align: left;
-		margin-bottom: 1em;
+		text-align: center;
+		margin-bottom: 1rem;
 	}
 	.text-gradient {
 		background-image: var(--accent-gradient);
